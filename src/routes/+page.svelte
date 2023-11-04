@@ -13,20 +13,20 @@
   let startIndex = 0
   let totalItems = 0
 
-  $: hasMore = totalItems > books.length
+  $: hasMore = totalItems > $books.length
 
   const handleSubmit = () => {
     if (!q.trim()) return
     promise = getBooks()
   }
   const getBooks = async () => {
-    $books = []
+    books.reset();
     empty = false
     startIndex = 0
     const result = await BookRepository.get({q})
     empty = result.totalItems === 0
     totalItems = result.totalItems
-    $books = result.items
+    books.add(result.items);
   }
   const handleLoadMore = () => {
     startIndex += 10
@@ -39,7 +39,7 @@
     const filteredItems = result.items.filter(item => {
       return !bookIds.includes(item.id)
     })
-    $books = [...$books, ...filteredItems]
+    books.add(filteredItems);
   }
 </script>
 
